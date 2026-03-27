@@ -44,24 +44,24 @@ const readingPaths = [
 
 <BaseLayout title="首页">
   <div class="max-w-[1160px] mx-auto px-6">
-    <section class="pt-14 sm:pt-20 pb-14 sm:pb-16">
-      <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
+    <section class="pt-12 sm:pt-16 pb-10 sm:pb-12">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
         <div>
-          <div class="eyebrow mb-5">Bruce Kang's Growth Research</div>
+          <div class="eyebrow mb-4">Bruce Kang's Growth Research</div>
           <h1 class="display-serif text-[46px] sm:text-[68px] leading-[0.94] tracking-[-0.055em] max-w-[12ch]">
             把增长拆成结构，再把结构变成执行。
           </h1>
-          <p class="mt-6 max-w-[44rem] text-[17px] sm:text-[19px] leading-relaxed text-[rgb(var(--text-2))]">
+          <p class="mt-5 max-w-[44rem] text-[17px] sm:text-[19px] leading-relaxed text-[rgb(var(--text-2))]">
             我把增长当成一套可设计、可迁移的工作系统来写。这里有方法框架、真实拆解，也有正在形成中的研究线索，但不会做成信息流。
           </p>
 
-          <div class="mt-8 flex flex-wrap gap-3">
+          <div class="mt-6 flex flex-wrap gap-3">
             <a href={url('frameworks/')} class="tag-pill">从框架开始</a>
             <a href={url('case-studies/')} class="tag-pill">看真实拆解</a>
             <a href={url('about/')} class="tag-pill">了解这个站怎么写</a>
           </div>
 
-          <div class="mt-8 flex flex-wrap gap-3">
+          <div class="mt-6 flex flex-wrap gap-3">
             <div class="metric-chip">
               <span class="metric-chip__value">{allPosts.length}</span>
               <span class="metric-chip__label">篇公开文章</span>
@@ -86,10 +86,10 @@ const readingPaths = [
             </div>
             <div class="hero-showcase__feature">
               <div class="section-kicker mb-3">What This Site Optimizes For</div>
-              <h3 class="text-[24px] leading-[1.1] tracking-[-0.03em] font-semibold max-w-[12ch]">
-                展示感更强，但判断仍然优先于包装。
+              <h3 class="text-[18px] sm:text-[20px] leading-tight tracking-[-0.02em] font-semibold whitespace-nowrap">
+                展示感更强，但判断仍优先于包装。
               </h3>
-              <p class="mt-3 text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+              <p class="mt-2.5 text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
                 借一点飞书和腾讯式的模块秩序、色彩分层和产品感，但不牺牲阅读与思考。
               </p>
             </div>
