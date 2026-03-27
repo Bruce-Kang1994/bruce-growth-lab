@@ -1,0 +1,49 @@
+---
+import { formatDate, readingTime, categoryMap } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  date: Date;
+  slug: string;
+  body?: string;
+  featured?: boolean;
+}
+
+const { title, description, category, tags, date, slug, body = '', featured = false } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const catInfo = categoryMap[category];
+---
+
+<article class:list={["group", featured && "col-span-full"]}>
+  <a href={`${base}posts/${slug}/`} class="block p-5 sm:p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)]/40 bg-[var(--color-surface)] hover:bg-[var(--color-surface-dim)] transition-all duration-200">
+    <div class="flex items-center gap-2 mb-3 text-xs">
+      <span class="px-2 py-0.5 rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-medium">
+        {catInfo?.label || category}
+      </span>
+      <span class="text-[var(--color-text-secondary)]">{formatDate(date)}</span>
+      <span class="text-[var(--color-text-secondary)]">&middot;</span>
+      <span class="text-[var(--color-text-secondary)]">{readingTime(body)}</span>
+    </div>
+    <h3 class:list={[
+      "font-bold leading-snug group-hover:text-[var(--color-accent)] transition-colors mb-2",
+      featured ? "text-xl sm:text-2xl" : "text-lg"
+    ]}>
+      {title}
+    </h3>
+    <p class="text-[var(--color-text-secondary)] text-sm leading-relaxed line-clamp-2">
+      {description}
+    </p>
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mt-3">
+        {tags.slice(0, 4).map((tag) => (
+          <span class="text-xs px-2 py-0.5 rounded bg-[var(--color-surface-dimmer)] text-[var(--color-text-secondary)]">
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
+  </a>
+</article>

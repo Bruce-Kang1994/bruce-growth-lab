@@ -1,0 +1,74 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/TOC.astro';
+import { formatDate, readingTime, categoryMap, slugify } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  date: Date;
+  headings: { depth: number; slug: string; text: string }[];
+  body: string;
+  relatedPosts?: { title: string; slug: string; category: string }[];
+}
+
+const { title, description, category, tags, date, headings, body, relatedPosts = [] } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const catInfo = categoryMap[category];
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+    <!-- Article header -->
+    <header class="max-w-[720px] mb-10">
+      <div class="flex items-center gap-2 mb-4 text-sm">
+        <a href={`${base}${category}/`} class="px-2.5 py-1 rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-medium hover:bg-[var(--color-accent)]/20 transition-colors">
+          {catInfo?.label || category}
+        </a>
+        <span class="text-[var(--color-text-secondary)]">{formatDate(date)}</span>
+        <span class="text-[var(--color-text-secondary)]">&middot;</span>
+        <span class="text-[var(--color-text-secondary)]">{readingTime(body)}</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight mb-4">
+        {title}
+      </h1>
+      <p class="text-lg text-[var(--color-text-secondary)] leading-relaxed">
+        {description}
+      </p>
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-5">
+          {tags.map((tag) => (
+            <a href={`${base}tags/${slugify(tag)}/`} class="text-sm px-3 py-1 rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <!-- Content + TOC layout -->
+    <div class="flex gap-12">
+      <article class="prose flex-1 min-w-0">
+        <slot />
+      </article>
+      <TOC headings={headings} />
+    </div>
+
+    <!-- Related posts -->
+    {relatedPosts.length > 0 && (
+      <section class="max-w-[720px] mt-16 pt-10 border-t border-[var(--color-border)]">
+        <h3 class="text-lg font-bold mb-4">相关文章</h3>
+        <div class="space-y-3">
+          {relatedPosts.map((post) => (
+            <a href={`${base}posts/${post.slug}/`} class="block p-4 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-surface-dim)] transition-all">
+              <span class="text-xs text-[var(--color-accent)] font-medium">{categoryMap[post.category]?.label}</span>
+              <h4 class="font-medium mt-1">{post.title}</h4>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>

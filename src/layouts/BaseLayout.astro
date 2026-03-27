@@ -1,0 +1,109 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, description = "Bruce 的增长方法论实验室 — 框架、案例、实战", ogImage } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const base = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title} | Bruce's Growth Lab</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- OG -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={`${title} | Bruce's Growth Lab`} />
+    <meta property="og:description" content={description} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | Bruce's Growth Lab`} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="sitemap" href={`${base}sitemap-index.xml`} />
+
+    <!-- Dark mode init (prevent flash) -->
+    <script is:inline>
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col bg-[var(--color-surface)] text-[var(--color-text)] transition-colors">
+    <header class="sticky top-0 z-50 bg-[var(--color-surface)]/80 backdrop-blur-md border-b border-[var(--color-border)]">
+      <nav class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <a href={base} class="text-lg font-bold tracking-tight hover:text-[var(--color-accent)] transition-colors">
+          Bruce's Growth Lab
+        </a>
+        <div class="flex items-center gap-1 sm:gap-4">
+          <a href={`${base}frameworks/`} class="hidden sm:inline px-2 py-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">增长框架</a>
+          <a href={`${base}case-studies/`} class="hidden sm:inline px-2 py-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">案例拆解</a>
+          <a href={`${base}dialogues/`} class="hidden sm:inline px-2 py-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">对话精华</a>
+          <a href={`${base}notes/`} class="hidden sm:inline px-2 py-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">学习笔记</a>
+          <a href={`${base}about/`} class="hidden sm:inline px-2 py-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">关于</a>
+
+          <!-- Mobile menu button -->
+          <button id="menu-toggle" class="sm:hidden p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]" aria-label="菜单">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+
+          <!-- Theme toggle -->
+          <button id="theme-toggle" class="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors" aria-label="切换主题">
+            <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Mobile menu -->
+      <div id="mobile-menu" class="hidden sm:hidden border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+        <div class="px-4 py-3 space-y-1">
+          <a href={`${base}frameworks/`} class="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]">增长框架</a>
+          <a href={`${base}case-studies/`} class="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]">案例拆解</a>
+          <a href={`${base}dialogues/`} class="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]">对话精华</a>
+          <a href={`${base}notes/`} class="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]">学习笔记</a>
+          <a href={`${base}about/`} class="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)]">关于</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="border-t border-[var(--color-border)] mt-20">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 text-center text-sm text-[var(--color-text-secondary)]">
+        <p>&copy; {new Date().getFullYear()} Bruce's Growth Lab. 用方法论驱动增长。</p>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const html = document.documentElement;
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      });
+
+      document.getElementById('menu-toggle')?.addEventListener('click', () => {
+        document.getElementById('mobile-menu')?.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>
