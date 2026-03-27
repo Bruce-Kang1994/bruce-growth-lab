@@ -11,6 +11,12 @@ const { title, description = "Bruce 的增长方法论实验室" } = Astro.props
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => withBase(path, base);
+const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const isActive = (path: string) => {
+  const target = url(path);
+  if (target === url('')) return currentPath === target;
+  return currentPath === target || currentPath.startsWith(target);
+};
 ---
 
 <!doctype html>
@@ -34,39 +40,40 @@ const url = (path: string) => withBase(path, base);
       if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches)) document.documentElement.classList.add('dark');
     </script>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col page-shell">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-[rgb(var(--surface-0))]/90 backdrop-blur-md border-b border-[rgb(var(--border))]">
-      <div class="max-w-[1080px] mx-auto px-6 h-14 flex items-center justify-between">
-        <a href={url('')} class="font-semibold text-[15px] tracking-[-0.01em] hover:opacity-70 transition-opacity">
-          Bruce's Growth Lab
-        </a>
+    <header class="sticky top-0 z-50 border-b border-[rgb(var(--border))] bg-[rgb(var(--surface-0))]/88 backdrop-blur-md">
+      <div class="max-w-[1160px] mx-auto px-6">
+        <div class="h-16 flex items-center justify-between gap-4">
+          <a href={url('')} class="min-w-0 group">
+            <div class="text-[11px] uppercase tracking-[0.14em] text-[rgb(var(--text-3))] mb-0.5">Bruce Kang</div>
+            <div class="font-semibold text-[15px] tracking-[-0.02em] text-[rgb(var(--text-1))] group-hover:text-[rgb(var(--accent))] transition-colors">
+              Growth Lab
+            </div>
+          </a>
 
-        <div class="flex items-center gap-0.5">
-          <!-- Desktop nav -->
-          <nav class="hidden md:flex items-center mr-2">
-            <a href={url('frameworks/')} class="nav-item" data-i18n="nav.frameworks">框架</a>
-            <a href={url('case-studies/')} class="nav-item" data-i18n="nav.caseStudies">案例</a>
-            <a href={url('dialogues/')} class="nav-item" data-i18n="nav.dialogues">对话</a>
-            <a href={url('notes/')} class="nav-item" data-i18n="nav.notes">笔记</a>
-            <a href={url('about/')} class="nav-item" data-i18n="nav.about">关于</a>
-          </nav>
+          <div class="flex items-center gap-1">
+            <!-- Desktop nav -->
+            <nav class="hidden md:flex items-center mr-1">
+              <a href={url('frameworks/')} class:list={['nav-item', isActive('frameworks/') && 'is-active']}>框架</a>
+              <a href={url('case-studies/')} class:list={['nav-item', isActive('case-studies/') && 'is-active']}>案例</a>
+              <a href={url('dialogues/')} class:list={['nav-item', isActive('dialogues/') && 'is-active']}>对话</a>
+              <a href={url('notes/')} class:list={['nav-item', isActive('notes/') && 'is-active']}>笔记</a>
+              <a href={url('about/')} class:list={['nav-item', isActive('about/') && 'is-active']}>关于</a>
+            </nav>
 
-          <div class="flex items-center border-l border-[rgb(var(--border))] pl-2 ml-1">
-            <!-- Lang -->
-            <button id="lang-toggle" class="ctrl-btn text-[12px] font-semibold tracking-wide" aria-label="语言">
-              <span id="lang-label">EN</span>
-            </button>
-            <!-- Theme -->
-            <button id="theme-toggle" class="ctrl-btn" aria-label="主题">
+            <div class="flex items-center border-l border-[rgb(var(--border))] pl-2 ml-1">
+              <!-- Theme -->
+              <button id="theme-toggle" class="ctrl-btn" aria-label="主题">
               <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
               <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364 6.364l-1.414-1.414M7.05 7.05L5.636 5.636m12.728 0l-1.414 1.414M7.05 16.95l-1.414 1.414"/></svg>
-            </button>
-            <!-- Mobile -->
-            <button id="menu-toggle" class="ctrl-btn md:hidden" aria-label="菜单">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
+              </button>
+              <!-- Mobile -->
+              <button id="menu-toggle" class="ctrl-btn md:hidden" aria-label="菜单">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -74,11 +81,11 @@ const url = (path: string) => withBase(path, base);
       <!-- Mobile nav -->
       <nav id="mobile-menu" class="hidden md:hidden border-t border-[rgb(var(--border))] bg-[rgb(var(--surface-0))]">
         <div class="max-w-[1080px] mx-auto px-6 py-3 flex flex-col gap-0.5">
-          <a href={url('frameworks/')} class="mobile-item" data-i18n="nav.frameworks">框架</a>
-          <a href={url('case-studies/')} class="mobile-item" data-i18n="nav.caseStudies">案例</a>
-          <a href={url('dialogues/')} class="mobile-item" data-i18n="nav.dialogues">对话</a>
-          <a href={url('notes/')} class="mobile-item" data-i18n="nav.notes">笔记</a>
-          <a href={url('about/')} class="mobile-item" data-i18n="nav.about">关于</a>
+          <a href={url('frameworks/')} class="mobile-item">框架</a>
+          <a href={url('case-studies/')} class="mobile-item">案例</a>
+          <a href={url('dialogues/')} class="mobile-item">对话</a>
+          <a href={url('notes/')} class="mobile-item">笔记</a>
+          <a href={url('about/')} class="mobile-item">关于</a>
         </div>
       </nav>
     </header>
@@ -86,10 +93,18 @@ const url = (path: string) => withBase(path, base);
     <main class="flex-1"><slot /></main>
 
     <!-- Footer -->
-    <footer class="border-t border-[rgb(var(--border))] mt-20">
-      <div class="max-w-[1080px] mx-auto px-6 py-8 flex items-center justify-between text-[13px] text-[rgb(var(--text-3))]">
-        <span>&copy; {new Date().getFullYear()} Bruce's Growth Lab</span>
-        <a href="https://github.com/Bruce-Kang1994" target="_blank" rel="noopener" class="hover:text-[rgb(var(--text-2))] transition-colors">GitHub</a>
+    <footer class="border-t border-[rgb(var(--border))] mt-24">
+      <div class="max-w-[1160px] mx-auto px-6 py-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div class="max-w-[30rem]">
+          <div class="text-[11px] uppercase tracking-[0.14em] text-[rgb(var(--text-3))] mb-2">Growth Lab</div>
+          <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+            一个持续迭代的增长研究笔记站。只写能被迁移、拆解和复用的判断，不做信息流堆砌。
+          </p>
+        </div>
+        <div class="text-[13px] text-[rgb(var(--text-3))] flex items-center gap-4">
+          <span>&copy; {new Date().getFullYear()} Bruce's Growth Lab</span>
+          <a href="https://github.com/Bruce-Kang1994" target="_blank" rel="noopener" class="hover:text-[rgb(var(--text-1))] transition-colors">GitHub</a>
+        </div>
       </div>
     </footer>
 
@@ -97,12 +112,20 @@ const url = (path: string) => withBase(path, base);
       .nav-item {
         padding: 6px 10px;
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
         color: rgb(var(--text-2));
         border-radius: 6px;
-        transition: color 0.12s;
+        letter-spacing: -0.01em;
+        transition: color 0.12s, background-color 0.12s;
       }
-      .nav-item:hover { color: rgb(var(--text-1)); }
+      .nav-item:hover {
+        color: rgb(var(--text-1));
+        background: rgb(var(--surface-1));
+      }
+      .nav-item.is-active {
+        color: rgb(var(--text-1));
+        background: rgb(var(--surface-1));
+      }
       .mobile-item {
         padding: 8px 10px;
         font-size: 14px;
@@ -115,13 +138,16 @@ const url = (path: string) => withBase(path, base);
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
         color: rgb(var(--text-3));
-        transition: color 0.12s;
+        transition: color 0.12s, background-color 0.12s;
       }
-      .ctrl-btn:hover { color: rgb(var(--text-1)); }
+      .ctrl-btn:hover {
+        color: rgb(var(--text-1));
+        background: rgb(var(--surface-1));
+      }
     </style>
 
     <script>
@@ -131,48 +157,6 @@ const url = (path: string) => withBase(path, base);
       });
       document.getElementById('menu-toggle')?.addEventListener('click', () => {
         document.getElementById('mobile-menu')?.classList.toggle('hidden');
-      });
-
-      const i18n: Record<string, Record<string, string>> = {
-        zh: { 'nav.frameworks':'框架','nav.caseStudies':'案例','nav.dialogues':'对话','nav.notes':'笔记','nav.about':'关于',
-          'home.featured':'精选','home.latest':'最新','home.explore':'分类',
-          'article.toc':'目录','article.related':'相关文章','tags.title':'标签','tags.articles':'篇文章',
-          'common.noArticles':'暂无文章',
-          'category.frameworks.label':'增长框架','category.frameworks.desc':'可复用的增长方法论和思维模型',
-          'category.case-studies.label':'案例拆解','category.case-studies.desc':'真实产品的增长策略深度分析',
-          'category.dialogues.label':'对话精华','category.dialogues.desc':'与增长从业者的访谈和讨论提炼',
-          'category.notes.label':'学习笔记','category.notes.desc':'阅读、课程和日常思考的记录',
-          'footer.copyright':'用方法论驱动增长',
-          'hero.line1':'增长不靠灵感，靠方法论。','hero.desc':'从维度分析到增长杠杆，从竞品拆解到实验闭环。把增长经验变成可复用的框架，在这里沉淀和分享。'
-        },
-        en: { 'nav.frameworks':'Frameworks','nav.caseStudies':'Cases','nav.dialogues':'Dialogues','nav.notes':'Notes','nav.about':'About',
-          'home.featured':'Featured','home.latest':'Latest','home.explore':'Categories',
-          'article.toc':'Contents','article.related':'Related','tags.title':'Tags','tags.articles':'articles',
-          'common.noArticles':'No articles yet',
-          'category.frameworks.label':'Frameworks','category.frameworks.desc':'Reusable growth methodologies',
-          'category.case-studies.label':'Case Studies','category.case-studies.desc':'Real product growth analysis',
-          'category.dialogues.label':'Dialogues','category.dialogues.desc':'Practitioner conversation insights',
-          'category.notes.label':'Notes','category.notes.desc':'Reading notes and reflections',
-          'footer.copyright':'Growth driven by methodology',
-          'hero.line1':'Growth is not about inspiration. It\'s about methodology.','hero.desc':'From dimensional analysis to growth levers, from competitive teardowns to experiment loops.'
-        },
-      };
-
-      function setLocale(l: string) {
-        const m = i18n[l] || i18n.zh;
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-          const k = el.getAttribute('data-i18n');
-          if (k && m[k]) el.textContent = m[k];
-        });
-        const lb = document.getElementById('lang-label');
-        if (lb) lb.textContent = l === 'zh' ? 'EN' : '中';
-        localStorage.setItem('locale', l);
-        document.documentElement.lang = l === 'zh' ? 'zh-CN' : 'en';
-      }
-
-      setLocale(localStorage.getItem('locale') || 'zh');
-      document.getElementById('lang-toggle')?.addEventListener('click', () => {
-        setLocale((localStorage.getItem('locale') || 'zh') === 'zh' ? 'en' : 'zh');
       });
     </script>
   </body>

@@ -10,61 +10,188 @@ const allPosts = (await getCollection('posts'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const featuredPosts = allPosts.filter((p) => p.data.featured);
-const recentPosts = allPosts.filter((p) => !p.data.featured);
+const leadPost = featuredPosts[0] ?? allPosts[0];
+const latestPosts = allPosts.filter((p) => p.id !== leadPost?.id).slice(0, 5);
+const highlightedPosts = allPosts.filter((p) => p.id !== leadPost?.id).slice(0, 3);
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => withBase(path, base);
 const cats = translations.zh.category;
+const categoryEntries = Object.entries(cats).map(([key, val]) => ({
+  key,
+  ...val,
+  count: allPosts.filter((post) => post.data.category === key).length,
+}));
+const readingPaths = [
+  {
+    title: '先看通用框架',
+    desc: '如果你想先建立一套判断产品增长问题的基本骨架，从 8 维度分析开始。',
+    href: leadPost ? url(`posts/${leadPost.id}/`) : url('frameworks/'),
+  },
+  {
+    title: '再看真实案例',
+    desc: '把抽象方法放回真实业务里，检查它在美团、ElevenLabs 这类产品上如何成立。',
+    href: url('case-studies/'),
+  },
+  {
+    title: '最后看工作笔记',
+    desc: '那些还在形成中的观点、对话和研究线索，会先出现在 notes 和 dialogues。',
+    href: url('notes/'),
+  },
+];
 ---
 
 <BaseLayout title="首页">
-  <div class="max-w-[1080px] mx-auto px-6">
-
-    <!-- Hero — compact, editorial -->
-    <section class="pt-16 sm:pt-20 pb-12 sm:pb-14 border-b border-[rgb(var(--border))]">
-      <h1 class="text-[28px] sm:text-[36px] font-extrabold tracking-[-0.025em] leading-[1.2] text-[rgb(var(--text-1))]" data-i18n="hero.line1">
-        增长不靠灵感，靠方法论。
-      </h1>
-      <p class="mt-3 text-[15px] sm:text-[16px] text-[rgb(var(--text-2))] leading-relaxed max-w-[540px]" data-i18n="hero.desc">
-        从维度分析到增长杠杆，从竞品拆解到实验闭环。把增长经验变成可复用的框架，在这里沉淀和分享。
-      </p>
-    </section>
-
-    <!-- Categories — inline pills -->
-    <section class="flex items-center gap-2 py-4 border-b border-[rgb(var(--border))] overflow-x-auto">
-      {Object.entries(cats).map(([key, val]) => (
-        <a href={url(`${key}/`)}
-          class="shrink-0 px-3 py-1.5 text-[13px] font-medium text-[rgb(var(--text-2))] rounded-full border border-[rgb(var(--border))] hover:border-[rgb(var(--text-3))] hover:text-[rgb(var(--text-1))] transition-colors"
-          data-i18n={`category.${key}.label`}>
-          {val.label}
-        </a>
-      ))}
-    </section>
-
-    <!-- Featured -->
-    {featuredPosts.length > 0 && (
-      <section class="pt-8">
-        <h2 class="section-label" data-i18n="home.featured">精选</h2>
+  <div class="max-w-[1160px] mx-auto px-6">
+    <section class="pt-14 sm:pt-20 pb-14 sm:pb-16">
+      <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
         <div>
-          {featuredPosts.map((post) => (
-            <ArticleCard
-              title={post.data.title}
-              description={post.data.description}
-              category={post.data.category}
-              tags={post.data.tags}
-              date={post.data.date}
-              slug={post.id}
-              body={post.body || ''}
-            />
-          ))}
+          <div class="eyebrow mb-5">Bruce Kang's Working Notebook</div>
+          <h1 class="display-serif text-[44px] sm:text-[64px] leading-[0.96] tracking-[-0.05em] max-w-[12ch]">
+            把增长拆成结构，再把结构变成执行。
+          </h1>
+          <p class="mt-6 max-w-[42rem] text-[17px] sm:text-[18px] leading-relaxed text-[rgb(var(--text-2))]">
+            这里不追热点，不堆黑话。我更关心产品为什么会增长、增长动作依赖什么业务前提，以及哪些判断真的能被迁移到别的场景里继续成立。
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-2.5">
+            <a href={url('frameworks/')} class="tag-pill">从框架开始</a>
+            <a href={url('case-studies/')} class="tag-pill">看真实拆解</a>
+            <a href={url('about/')} class="tag-pill">了解这个站怎么写</a>
+          </div>
         </div>
-      </section>
+
+        <aside class="paper-card p-5 sm:p-6">
+          <div class="section-kicker mb-4">这不是资讯流</div>
+          <ul class="space-y-3 text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+            <li>只写能复用的判断，不写“知道了也没法用”的空洞总结。</li>
+            <li>优先拆结构、变量、杠杆和执行顺序，而不是只给结论。</li>
+            <li>每篇文章都希望回答一个明确问题，而不是完成一次内容产出。</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="py-10">
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <div class="section-kicker mb-2">Research Tracks</div>
+          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]">这个站目前在研究什么</h2>
+        </div>
+        <p class="hidden sm:block max-w-[24rem] text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+          不是按“内容栏目”分，而是按我真正持续投入精力的问题域来分。
+        </p>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {categoryEntries.map((entry) => (
+          <a href={url(`${entry.key}/`)} class="paper-card p-5 group">
+            <div class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))] mb-6">{entry.count} 篇内容</div>
+            <h3 class="text-[18px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">
+              {entry.label}
+            </h3>
+            <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">{entry.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {leadPost && (
+      <>
+        <div class="rule"></div>
+
+        <section class="py-10">
+          <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
+            <article class="paper-card p-6 sm:p-8">
+              <div class="section-kicker mb-5">Lead Essay</div>
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-[rgb(var(--text-3))] mb-4">
+                <span class="font-semibold text-[rgb(var(--text-2))]">{cats[leadPost.data.category as keyof typeof cats]?.label}</span>
+                <span>&middot;</span>
+                <span>{leadPost.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </div>
+              <a href={url(`posts/${leadPost.id}/`)} class="editorial-link block">
+                <h2 class="display-serif text-[34px] sm:text-[44px] leading-[1.04] tracking-[-0.045em] max-w-[14ch]">
+                  {leadPost.data.title}
+                </h2>
+              </a>
+              <p class="mt-5 max-w-[42rem] text-[16px] leading-relaxed text-[rgb(var(--text-2))]">
+                {leadPost.data.description}
+              </p>
+              <div class="mt-7 flex flex-wrap gap-2">
+                {leadPost.data.tags.slice(0, 3).map((tag) => (
+                  <span class="tag-pill">{tag}</span>
+                ))}
+              </div>
+              <a href={url(`posts/${leadPost.id}/`)} class="inline-flex items-center gap-2 mt-8 text-[14px] font-semibold text-[rgb(var(--text-1))] hover:text-[rgb(var(--accent))]">
+                读这篇文章
+                <span aria-hidden="true">↗</span>
+              </a>
+            </article>
+
+            <aside class="flex flex-col gap-4">
+              <div class="muted-panel p-5">
+                <div class="section-kicker mb-3">How To Read</div>
+                <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+                  如果你是第一次来，先看这篇总框架，再回到案例拆解，会更容易看出每个增长动作背后的结构。
+                </p>
+              </div>
+              <div class="paper-card p-5">
+                <div class="section-kicker mb-4">Also Start Here</div>
+                <div class="space-y-1">
+                  {highlightedPosts.map((post) => (
+                    <ArticleCard
+                      title={post.data.title}
+                      description={post.data.description}
+                      category={post.data.category}
+                      tags={post.data.tags}
+                      date={post.data.date}
+                      slug={post.id}
+                      body={post.body || ''}
+                    />
+                  ))}
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </>
     )}
 
-    <!-- Latest -->
-    <section class="pt-8 pb-16">
-      <h2 class="section-label" data-i18n="home.latest">最新</h2>
-      <div>
-        {recentPosts.map((post) => (
+    <div class="rule"></div>
+
+    <section class="py-10">
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <div class="section-kicker mb-2">Reading Paths</div>
+          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]">不同读法，从不同入口开始</h2>
+        </div>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        {readingPaths.map((item) => (
+          <a href={item.href} class="paper-card p-5 group">
+            <div class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))] mb-4">Start Here</div>
+            <h3 class="text-[19px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">
+              {item.title}
+            </h3>
+            <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">{item.desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section class="py-10 pb-20">
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <div class="section-kicker mb-2">Latest Writing</div>
+          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]">最近写的内容</h2>
+        </div>
+      </div>
+      <div class="paper-card px-6">
+        {latestPosts.map((post) => (
           <ArticleCard
             title={post.data.title}
             description={post.data.description}
@@ -79,14 +206,3 @@ const cats = translations.zh.category;
     </section>
   </div>
 </BaseLayout>
-
-<style>
-  .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: rgb(var(--text-3));
-    margin-bottom: 4px;
-  }
-</style>
