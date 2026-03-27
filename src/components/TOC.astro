@@ -10,22 +10,23 @@ interface Props {
 }
 
 const { headings } = Astro.props;
-const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
-{filteredHeadings.length > 0 && (
-  <nav class="hidden xl:block sticky top-24 w-56 shrink-0 self-start">
-    <h4 class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-3">
+{toc.length > 0 && (
+  <aside class="hidden xl:block sticky top-24 w-56 shrink-0 self-start">
+    <h4 class="text-xs font-semibold uppercase tracking-widest text-[rgb(var(--text-tertiary))] mb-4" data-i18n="article.toc">
       目录
     </h4>
-    <ul class="space-y-1.5 text-sm border-l border-[var(--color-border)]">
-      {filteredHeadings.map((h) => (
+    <ul class="space-y-1 text-[13px] border-l border-[rgb(var(--border))]">
+      {toc.map((h) => (
         <li>
           <a
             href={`#${h.slug}`}
             class:list={[
-              "block py-0.5 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors border-l-2 border-transparent hover:border-[var(--color-accent)] -ml-px",
-              h.depth === 2 ? "pl-4" : "pl-7 text-xs",
+              "block py-1 text-[rgb(var(--text-tertiary))] hover:text-[rgb(var(--accent))] transition-colors",
+              "border-l-2 border-transparent hover:border-[rgb(var(--accent))] -ml-px",
+              h.depth === 2 ? "pl-4 font-medium" : "pl-7",
             ]}
           >
             {h.text}
@@ -33,5 +34,5 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         </li>
       ))}
     </ul>
-  </nav>
+  </aside>
 )}
