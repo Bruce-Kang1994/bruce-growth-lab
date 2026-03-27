@@ -34,9 +34,9 @@ const tone = categoryColors[category] ?? categoryColors.frameworks;
           {catLabel}
         </a>
         <span>&middot;</span>
-        <span>{formatDate(date)}</span>
+        <span data-locale-date data-date={date.toISOString()}>{formatDate(date)}</span>
         <span>&middot;</span>
-        <span>{mins} min</span>
+        <span data-locale-mins data-mins={mins}>{mins} 分钟阅读</span>
       </div>
 
       <h1 class="display-serif text-[36px] sm:text-[48px] font-bold leading-[1.08] tracking-[-0.04em] mb-5">

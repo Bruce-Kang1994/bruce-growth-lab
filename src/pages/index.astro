@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
-import { categoryColors, withBase } from '../lib/utils';
+import { categoryColors, formatDate, readingTime, withBase } from '../lib/utils';
 import { translations } from '../lib/i18n';
 
 const allPosts = (await getCollection('posts'))
@@ -15,31 +15,43 @@ const latestPosts = allPosts.filter((p) => p.id !== leadPost?.id).slice(0, 5);
 const highlightedPosts = allPosts.filter((p) => p.id !== leadPost?.id).slice(0, 3);
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => withBase(path, base);
-const cats = translations.zh.category;
+const zh = translations.zh;
+const en = translations.en;
+const cats = zh.category;
 const totalTags = new Set(allPosts.flatMap((post) => post.data.tags)).size;
 const categoryEntries = Object.entries(cats).map(([key, val]) => ({
   key,
-  ...val,
+  labelZh: val.label,
+  descZh: val.desc,
+  labelEn: en.category[key as keyof typeof en.category]?.label ?? val.label,
+  descEn: en.category[key as keyof typeof en.category]?.desc ?? val.desc,
   count: allPosts.filter((post) => post.data.category === key).length,
   tone: categoryColors[key] ?? categoryColors.frameworks,
 }));
 const readingPaths = [
   {
-    title: '先看通用框架',
-    desc: '如果你想先建立一套判断产品增长问题的基本骨架，从 8 维度分析开始。',
+    titleZh: '先看通用框架',
+    titleEn: 'Start with the core framework',
+    descZh: '如果你想先建立一套判断产品增长问题的基本骨架，从 8 维度分析开始。',
+    descEn: 'Build a reusable mental model first, then use the cases to understand how it gets applied.',
     href: leadPost ? url(`posts/${leadPost.id}/`) : url('frameworks/'),
   },
   {
-    title: '再看真实案例',
-    desc: '把抽象方法放回真实业务里，检查它在美团、ElevenLabs 这类产品上如何成立。',
+    titleZh: '再看真实案例',
+    titleEn: 'Then read real teardowns',
+    descZh: '把抽象方法放回真实业务里，检查它在美团、ElevenLabs 这类产品上如何成立。',
+    descEn: 'Move from abstract frameworks to real products and see how the structure holds up in practice.',
     href: url('case-studies/'),
   },
   {
-    title: '最后看工作笔记',
-    desc: '那些还在形成中的观点、对话和研究线索，会先出现在 notes 和 dialogues。',
+    titleZh: '最后看工作笔记',
+    titleEn: 'Finish with working notes',
+    descZh: '那些还在形成中的观点、对话和研究线索，会先出现在 notes 和 dialogues。',
+    descEn: 'The rough edges, in-progress ideas, and research fragments show up here before they become essays.',
     href: url('notes/'),
   },
 ];
+const leadReadMinutes = leadPost ? readingTime(leadPost.body || '') : 0;
 ---
 
 <BaseLayout title="首页">
@@ -47,46 +59,46 @@ const readingPaths = [
     <section class="pt-8 sm:pt-10 pb-10 sm:pb-12">
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
         <div>
-          <div class="eyebrow mb-4">Bruce Kang's Growth Research</div>
-          <h1 class="display-serif text-[36px] sm:text-[48px] leading-[1.1] tracking-[-0.04em] max-w-[20ch]">
+          <div class="eyebrow mb-4" data-copy-zh="Bruce Kang 的增长研究" data-copy-en="Bruce Kang's Growth Research">Bruce Kang 的增长研究</div>
+          <h1 class="display-serif text-[36px] sm:text-[48px] leading-[1.1] tracking-[-0.04em] max-w-[20ch]" data-copy-zh="把增长拆成结构，再把结构变成执行。" data-copy-en="Break growth into structure, then turn structure into execution.">
             把增长拆成结构，再把结构变成执行。
           </h1>
-          <p class="mt-5 max-w-[44rem] text-[17px] sm:text-[19px] leading-relaxed text-[rgb(var(--text-2))]">
+          <p class="mt-5 max-w-[44rem] text-[17px] sm:text-[19px] leading-relaxed text-[rgb(var(--text-2))]" data-copy-zh="我把增长当成一套可设计、可迁移的工作系统来写。这里有方法框架、真实拆解，也有正在形成中的研究线索，但不会做成信息流。" data-copy-en="I write about growth as a system that can be designed, transferred, and executed. You will find frameworks, real teardowns, and research threads here, but not a content feed.">
             我把增长当成一套可设计、可迁移的工作系统来写。这里有方法框架、真实拆解，也有正在形成中的研究线索，但不会做成信息流。
           </p>
 
           <div class="mt-6 flex flex-wrap gap-3">
-            <a href={url('frameworks/')} class="tag-pill">从框架开始</a>
-            <a href={url('case-studies/')} class="tag-pill">看真实拆解</a>
-            <a href={url('about/')} class="tag-pill">了解这个站怎么写</a>
+            <a href={url('frameworks/')} class="tag-pill" data-copy-zh="从框架开始" data-copy-en="Start with frameworks">从框架开始</a>
+            <a href={url('case-studies/')} class="tag-pill" data-copy-zh="看真实拆解" data-copy-en="See real teardowns">看真实拆解</a>
+            <a href={url('about/')} class="tag-pill" data-copy-zh="了解这个站怎么写" data-copy-en="How this site is written">了解这个站怎么写</a>
           </div>
 
           <div class="mt-6 flex flex-wrap gap-3">
             <div class="metric-chip">
               <span class="metric-chip__value">{allPosts.length}</span>
-              <span class="metric-chip__label">篇公开文章</span>
+              <span class="metric-chip__label" data-copy-zh="篇公开文章" data-copy-en="published essays">篇公开文章</span>
             </div>
             <div class="metric-chip">
               <span class="metric-chip__value">{totalTags}</span>
-              <span class="metric-chip__label">个主题标签</span>
+              <span class="metric-chip__label" data-copy-zh="个主题标签" data-copy-en="topic tags">个主题标签</span>
             </div>
             <div class="metric-chip">
               <span class="metric-chip__value">1</span>
-              <span class="metric-chip__label">个长期研究站</span>
+              <span class="metric-chip__label" data-copy-zh="个长期研究站" data-copy-en="living research archive">个长期研究站</span>
             </div>
           </div>
         </div>
 
         <aside class="paper-card p-5 sm:p-6 self-start">
-          <div class="section-kicker mb-4">建议阅读顺序</div>
+          <div class="section-kicker mb-4" data-copy-zh="建议阅读顺序" data-copy-en="Recommended Reading Order">建议阅读顺序</div>
           <div class="space-y-3">
             {readingPaths.map((path, i) => (
               <a href={path.href} class="group block">
                 <div class="flex items-start gap-3">
                   <span class="shrink-0 w-6 h-6 rounded-full bg-[rgb(var(--accent))]/10 text-[rgb(var(--accent))] text-[12px] font-bold flex items-center justify-center">{i + 1}</span>
                   <div class="min-w-0">
-                    <div class="text-[14px] font-semibold group-hover:text-[rgb(var(--accent))] transition-colors">{path.title}</div>
-                    <div class="text-[12px] leading-relaxed text-[rgb(var(--text-3))] mt-0.5">{path.desc}</div>
+                    <div class="text-[14px] font-semibold group-hover:text-[rgb(var(--accent))] transition-colors" data-copy-zh={path.titleZh} data-copy-en={path.titleEn}>{path.titleZh}</div>
+                    <div class="text-[12px] leading-relaxed text-[rgb(var(--text-3))] mt-0.5" data-copy-zh={path.descZh} data-copy-en={path.descEn}>{path.descZh}</div>
                   </div>
                 </div>
               </a>
@@ -99,13 +111,13 @@ const readingPaths = [
     <div class="rule"></div>
 
     <section class="py-10">
-      <div class=”flex items-end justify-between gap-6 mb-6”>
-        <div class=”min-w-0”>
-          <div class=”section-kicker mb-2”>Research Tracks</div>
-          <h2 class=”display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]”>这个站目前在研究什么</h2>
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <div class="section-kicker mb-2" data-copy-zh="研究方向" data-copy-en="Research Tracks">研究方向</div>
+          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]" data-copy-zh="这个站目前在研究什么" data-copy-en="What this site is actively working on">这个站目前在研究什么</h2>
         </div>
-        <p class=”hidden sm:block shrink-0 max-w-[20rem] text-[13px] leading-relaxed text-[rgb(var(--text-3))] text-right”>
-          不是按”内容栏目”分，而是按我真正持续投入精力的问题域来分。
+        <p class="hidden sm:block max-w-[24rem] text-[14px] leading-relaxed text-[rgb(var(--text-2))]" data-copy-zh="不是按“内容栏目”分，而是按我真正持续投入精力的问题域来分。" data-copy-en="These are grouped by the problem spaces I keep returning to, not by generic content buckets.">
+          不是按“内容栏目”分，而是按我真正持续投入精力的问题域来分。
         </p>
       </div>
 
@@ -114,12 +126,12 @@ const readingPaths = [
           <a href={url(`${entry.key}/`)} class="track-card p-5 group">
             <div class="flex items-center justify-between gap-4 mb-6">
               <span class:list={['track-card__icon', entry.tone.bg, entry.tone.text, entry.tone.border]}>{entry.tone.icon}</span>
-              <span class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))]">{entry.count} 篇内容</span>
+              <span class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))]" data-locale-count data-count={entry.count}></span>
             </div>
-            <h3 class="text-[18px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">
-              {entry.label}
+            <h3 class="text-[18px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors" data-copy-zh={entry.labelZh} data-copy-en={entry.labelEn}>
+              {entry.labelZh}
             </h3>
-            <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">{entry.desc}</p>
+            <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]" data-copy-zh={entry.descZh} data-copy-en={entry.descEn}>{entry.descZh}</p>
           </a>
         ))}
       </div>
@@ -130,15 +142,17 @@ const readingPaths = [
         <div class="rule"></div>
 
         <section class="py-10">
-          <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
-            <article class="paper-card paper-card--accent p-6 sm:p-8">
-              <div class="section-kicker mb-5">Lead Essay</div>
+          <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:items-start">
+            <article class="paper-card paper-card--accent lead-essay-card p-6 sm:p-8">
+              <div class="section-kicker mb-5" data-copy-zh="代表文章" data-copy-en="Lead Essay">代表文章</div>
               <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-[rgb(var(--text-3))] mb-4">
                 <span class:list={['inline-flex items-center rounded-full border px-2.5 py-1 text-[12px] font-semibold', categoryColors[leadPost.data.category]?.bg, categoryColors[leadPost.data.category]?.text, categoryColors[leadPost.data.category]?.border]}>
-                  {cats[leadPost.data.category as keyof typeof cats]?.label}
+                  <span data-copy-zh={cats[leadPost.data.category as keyof typeof cats]?.label} data-copy-en={en.category[leadPost.data.category as keyof typeof en.category]?.label ?? cats[leadPost.data.category as keyof typeof cats]?.label}>
+                    {cats[leadPost.data.category as keyof typeof cats]?.label}
+                  </span>
                 </span>
                 <span>&middot;</span>
-                <span>{leadPost.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span data-locale-date data-date={leadPost.data.date.toISOString()}>{formatDate(leadPost.data.date)}</span>
               </div>
               <a href={url(`posts/${leadPost.id}/`)} class="editorial-link block">
                 <h2 class="display-serif text-[34px] sm:text-[44px] leading-[1.04] tracking-[-0.045em] max-w-[14ch]">
@@ -148,26 +162,44 @@ const readingPaths = [
               <p class="mt-5 max-w-[42rem] text-[16px] leading-relaxed text-[rgb(var(--text-2))]">
                 {leadPost.data.description}
               </p>
-              <div class="mt-7 flex flex-wrap gap-2">
-                {leadPost.data.tags.slice(0, 3).map((tag) => (
-                  <span class="tag-pill">{tag}</span>
-                ))}
+
+              <div class="lead-essay__meta-grid mt-7">
+                <div class="lead-essay__meta-tile">
+                  <div class="lead-essay__meta-label" data-copy-zh="发布时间" data-copy-en="Published">发布时间</div>
+                  <div class="lead-essay__meta-value" data-locale-date data-date={leadPost.data.date.toISOString()}>{formatDate(leadPost.data.date)}</div>
+                </div>
+                <div class="lead-essay__meta-tile">
+                  <div class="lead-essay__meta-label" data-copy-zh="阅读时长" data-copy-en="Read time">阅读时长</div>
+                  <div class="lead-essay__meta-value" data-locale-mins data-mins={leadReadMinutes}>{leadReadMinutes} 分钟</div>
+                </div>
+                <div class="lead-essay__meta-tile">
+                  <div class="lead-essay__meta-label" data-copy-zh="包含标签" data-copy-en="Tagged with">包含标签</div>
+                  <div class="lead-essay__meta-value">{leadPost.data.tags.length}</div>
+                </div>
               </div>
-              <a href={url(`posts/${leadPost.id}/`)} class="inline-flex items-center gap-2 mt-8 text-[14px] font-semibold text-[rgb(var(--text-1))] hover:text-[rgb(var(--accent))]">
-                读这篇文章
-                <span aria-hidden="true">↗</span>
-              </a>
+
+              <div class="lead-essay__footer mt-7">
+                <div class="flex flex-wrap gap-2">
+                  {leadPost.data.tags.slice(0, 3).map((tag) => (
+                    <span class="tag-pill">{tag}</span>
+                  ))}
+                </div>
+                <a href={url(`posts/${leadPost.id}/`)} class="lead-essay__cta">
+                  <span data-copy-zh="读这篇文章" data-copy-en="Read this essay">读这篇文章</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
             </article>
 
             <aside class="flex flex-col gap-4">
               <div class="muted-panel muted-panel--brand p-5">
-                <div class="section-kicker mb-3">How To Read</div>
-                <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+                <div class="section-kicker mb-3" data-copy-zh="建议读法" data-copy-en="How To Read">建议读法</div>
+                <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]" data-copy-zh="如果你是第一次来，先看这篇总框架，再回到案例拆解，会更容易看出每个增长动作背后的结构。" data-copy-en="If this is your first visit, start with the framework essay and then move into the case studies. The structure will become easier to see.">
                   如果你是第一次来，先看这篇总框架，再回到案例拆解，会更容易看出每个增长动作背后的结构。
                 </p>
               </div>
               <div class="paper-card p-5">
-                <div class="section-kicker mb-4">Also Start Here</div>
+                <div class="section-kicker mb-4" data-copy-zh="也可以从这里开始" data-copy-en="Also Start Here">也可以从这里开始</div>
                 <div class="space-y-1">
                   {highlightedPosts.map((post) => (
                     <ArticleCard
@@ -193,19 +225,19 @@ const readingPaths = [
     <section class="py-10">
       <div class="flex items-end justify-between gap-4 mb-6">
         <div>
-          <div class="section-kicker mb-2">Reading Paths</div>
-          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]">不同读法，从不同入口开始</h2>
+          <div class="section-kicker mb-2" data-copy-zh="阅读路径" data-copy-en="Reading Paths">阅读路径</div>
+          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]" data-copy-zh="不同读法，从不同入口开始" data-copy-en="Different ways in, depending on how you like to read">不同读法，从不同入口开始</h2>
         </div>
       </div>
 
       <div class="grid gap-4 md:grid-cols-3">
         {readingPaths.map((item) => (
           <a href={item.href} class="path-card p-5 group">
-            <div class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))] mb-4">Start Here</div>
+            <div class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))] mb-4" data-copy-zh="从这里开始" data-copy-en="Start Here">从这里开始</div>
             <h3 class="text-[19px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">
-              {item.title}
+              <span data-copy-zh={item.titleZh} data-copy-en={item.titleEn}>{item.titleZh}</span>
             </h3>
-            <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">{item.desc}</p>
+            <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]" data-copy-zh={item.descZh} data-copy-en={item.descEn}>{item.descZh}</p>
           </a>
         ))}
       </div>
@@ -216,8 +248,8 @@ const readingPaths = [
     <section class="py-10 pb-20">
       <div class="flex items-end justify-between gap-4 mb-6">
         <div>
-          <div class="section-kicker mb-2">Latest Writing</div>
-          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]">最近写的内容</h2>
+          <div class="section-kicker mb-2" data-copy-zh="最近更新" data-copy-en="Latest Writing">最近更新</div>
+          <h2 class="display-serif text-[28px] sm:text-[34px] tracking-[-0.03em]" data-copy-zh="最近写的内容" data-copy-en="Latest writing and notes">最近写的内容</h2>
         </div>
       </div>
       <div class="paper-card px-6">

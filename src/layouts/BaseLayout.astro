@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { withBase } from '../lib/utils';
+import { translations } from '../lib/i18n';
 
 interface Props {
   title: string;
@@ -56,14 +57,18 @@ const isActive = (path: string) => {
           <div class="flex items-center gap-1">
             <!-- Desktop nav -->
             <nav class="hidden md:flex items-center mr-1">
-              <a href={url('frameworks/')} class:list={['nav-item', isActive('frameworks/') && 'is-active']}>框架</a>
-              <a href={url('case-studies/')} class:list={['nav-item', isActive('case-studies/') && 'is-active']}>案例</a>
-              <a href={url('dialogues/')} class:list={['nav-item', isActive('dialogues/') && 'is-active']}>对话</a>
-              <a href={url('notes/')} class:list={['nav-item', isActive('notes/') && 'is-active']}>笔记</a>
-              <a href={url('about/')} class:list={['nav-item', isActive('about/') && 'is-active']}>关于</a>
+              <a href={url('frameworks/')} class:list={['nav-item', isActive('frameworks/') && 'is-active']} data-i18n="nav.frameworks">框架</a>
+              <a href={url('case-studies/')} class:list={['nav-item', isActive('case-studies/') && 'is-active']} data-i18n="nav.caseStudies">案例</a>
+              <a href={url('dialogues/')} class:list={['nav-item', isActive('dialogues/') && 'is-active']} data-i18n="nav.dialogues">对话</a>
+              <a href={url('notes/')} class:list={['nav-item', isActive('notes/') && 'is-active']} data-i18n="nav.notes">笔记</a>
+              <a href={url('about/')} class:list={['nav-item', isActive('about/') && 'is-active']} data-i18n="nav.about">关于</a>
             </nav>
 
             <div class="flex items-center border-l border-[rgb(var(--border))] pl-2 ml-1">
+              <div class="locale-switch mr-1" role="group" aria-label="Language">
+                <button type="button" class="locale-btn" data-set-locale="zh" aria-pressed="true">中</button>
+                <button type="button" class="locale-btn" data-set-locale="en" aria-pressed="false">EN</button>
+              </div>
               <!-- Theme -->
               <button id="theme-toggle" class="ctrl-btn" aria-label="主题">
               <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
@@ -81,11 +86,11 @@ const isActive = (path: string) => {
       <!-- Mobile nav -->
       <nav id="mobile-menu" class="hidden md:hidden border-t border-[rgb(var(--border))] bg-[rgb(var(--surface-0))]">
         <div class="max-w-[1080px] mx-auto px-6 py-3 flex flex-col gap-0.5">
-          <a href={url('frameworks/')} class="mobile-item">框架</a>
-          <a href={url('case-studies/')} class="mobile-item">案例</a>
-          <a href={url('dialogues/')} class="mobile-item">对话</a>
-          <a href={url('notes/')} class="mobile-item">笔记</a>
-          <a href={url('about/')} class="mobile-item">关于</a>
+          <a href={url('frameworks/')} class="mobile-item" data-i18n="nav.frameworks">框架</a>
+          <a href={url('case-studies/')} class="mobile-item" data-i18n="nav.caseStudies">案例</a>
+          <a href={url('dialogues/')} class="mobile-item" data-i18n="nav.dialogues">对话</a>
+          <a href={url('notes/')} class="mobile-item" data-i18n="nav.notes">笔记</a>
+          <a href={url('about/')} class="mobile-item" data-i18n="nav.about">关于</a>
         </div>
       </nav>
     </header>
@@ -97,7 +102,7 @@ const isActive = (path: string) => {
       <div class="max-w-[1160px] mx-auto px-6 py-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div class="max-w-[30rem]">
           <div class="text-[11px] uppercase tracking-[0.14em] text-[rgb(var(--text-3))] mb-2">Growth Lab</div>
-          <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+          <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]" data-copy-zh="一个持续迭代的增长研究笔记站。只写能被迁移、拆解和复用的判断，不做信息流堆砌。" data-copy-en="An evolving growth research archive focused on judgments that can be transferred, broken down, and reused, not on publishing a content feed.">
             一个持续迭代的增长研究笔记站。只写能被迁移、拆解和复用的判断，不做信息流堆砌。
           </p>
         </div>
@@ -148,15 +153,93 @@ const isActive = (path: string) => {
         color: rgb(var(--text-1));
         background: rgb(var(--surface-1));
       }
+      .locale-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        padding: 2px;
+        border-radius: 10px;
+        border: 1px solid rgb(var(--border));
+        background: rgb(var(--surface-1) / 0.86);
+      }
+      .locale-btn {
+        min-width: 34px;
+        height: 30px;
+        padding: 0 9px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: rgb(var(--text-3));
+        transition: color 0.12s, background-color 0.12s, box-shadow 0.12s;
+      }
+      .locale-btn.is-active {
+        color: rgb(var(--text-1));
+        background: rgb(var(--surface-0));
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4);
+      }
     </style>
 
-    <script>
+    <script is:inline define:vars={{ i18nMessages: translations }}>
+      const getNestedValue = (obj, key) => key.split('.').reduce((acc, part) => acc?.[part], obj);
+      const formatLocaleDate = (value, locale) => {
+        const date = new Date(value);
+        if (Number.isNaN(date.valueOf())) return value;
+        return locale === 'en'
+          ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+          : date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+      };
+      const applyLocale = (locale) => {
+        document.documentElement.lang = locale === 'en' ? 'en' : 'zh-CN';
+        document.documentElement.dataset.locale = locale;
+        localStorage.setItem('locale', locale);
+
+        document.querySelectorAll('[data-i18n]').forEach((node) => {
+          const key = node.getAttribute('data-i18n');
+          const value = getNestedValue(i18nMessages[locale], key);
+          if (value) node.textContent = value;
+        });
+
+        document.querySelectorAll('[data-copy-zh][data-copy-en]').forEach((node) => {
+          node.textContent = locale === 'en' ? node.getAttribute('data-copy-en') : node.getAttribute('data-copy-zh');
+        });
+
+        document.querySelectorAll('[data-locale-date]').forEach((node) => {
+          const rawDate = node.getAttribute('data-date');
+          if (rawDate) node.textContent = formatLocaleDate(rawDate, locale);
+        });
+
+        document.querySelectorAll('[data-locale-mins]').forEach((node) => {
+          const mins = Number(node.getAttribute('data-mins') || '0');
+          node.textContent = locale === 'en' ? `${mins} min read` : `${mins} 分钟阅读`;
+        });
+
+        document.querySelectorAll('[data-locale-count]').forEach((node) => {
+          const count = Number(node.getAttribute('data-count') || '0');
+          node.textContent = locale === 'en' ? `${count} posts` : `${count} 篇内容`;
+        });
+
+        document.querySelectorAll('[data-set-locale]').forEach((button) => {
+          const isActive = button.getAttribute('data-set-locale') === locale;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      };
+
+      const initialLocale = localStorage.getItem('locale') === 'en' ? 'en' : 'zh';
+      applyLocale(initialLocale);
+
       document.getElementById('theme-toggle')?.addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
       });
       document.getElementById('menu-toggle')?.addEventListener('click', () => {
         document.getElementById('mobile-menu')?.classList.toggle('hidden');
+      });
+      document.querySelectorAll('[data-set-locale]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const locale = button.getAttribute('data-set-locale');
+          if (locale === 'zh' || locale === 'en') applyLocale(locale);
+        });
       });
     </script>
   </body>
