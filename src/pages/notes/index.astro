@@ -12,24 +12,17 @@ const cat = translations.zh.category.notes;
 ---
 
 <BaseLayout title={cat.label} description={cat.desc}>
-  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
-    <header class="mb-10 animate-fade-in">
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3" data-i18n="category.notes.label">{cat.label}</h1>
-      <p class="text-lg text-[rgb(var(--text-secondary))]" data-i18n="category.notes.desc">{cat.desc}</p>
+  <div class="max-w-[1080px] mx-auto px-6 py-12 sm:py-16">
+    <header class="mb-6 pb-6 border-b border-[rgb(var(--border))]">
+      <h1 class="text-[24px] sm:text-[28px] font-extrabold tracking-[-0.02em]" data-i18n="category.notes.label">{cat.label}</h1>
+      <p class="mt-1.5 text-[14px] text-[rgb(var(--text-2))]" data-i18n="category.notes.desc">{cat.desc}</p>
     </header>
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div>
       {posts.map((post) => (
-        <ArticleCard
-          title={post.data.title}
-          description={post.data.description}
-          category={post.data.category}
-          tags={post.data.tags}
-          date={post.data.date}
-          slug={post.id}
-          body={post.body || ''}
-        />
+        <ArticleCard title={post.data.title} description={post.data.description} category={post.data.category}
+          tags={post.data.tags} date={post.data.date} slug={post.id} body={post.body || ''} />
       ))}
     </div>
-    {posts.length === 0 && <p class="text-[rgb(var(--text-secondary))]" data-i18n="common.noArticles">暂无文章</p>}
+    {posts.length === 0 && <p class="text-[rgb(var(--text-3))] py-8" data-i18n="common.noArticles">暂无文章</p>}
   </div>
 </BaseLayout>

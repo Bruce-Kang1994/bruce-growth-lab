@@ -14,19 +14,19 @@ const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 {toc.length > 0 && (
-  <aside class="hidden xl:block sticky top-24 w-56 shrink-0 self-start">
-    <h4 class="text-xs font-semibold uppercase tracking-widest text-[rgb(var(--text-tertiary))] mb-4" data-i18n="article.toc">
+  <aside class="hidden xl:block sticky top-20 w-52 shrink-0 self-start">
+    <h4 class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[rgb(var(--text-3))] mb-3" data-i18n="article.toc">
       目录
     </h4>
-    <ul class="space-y-1 text-[13px] border-l border-[rgb(var(--border))]">
+    <ul class="space-y-0.5 text-[13px] border-l border-[rgb(var(--border))]">
       {toc.map((h) => (
         <li>
           <a
             href={`#${h.slug}`}
             class:list={[
-              "block py-1 text-[rgb(var(--text-tertiary))] hover:text-[rgb(var(--accent))] transition-colors",
-              "border-l-2 border-transparent hover:border-[rgb(var(--accent))] -ml-px",
-              h.depth === 2 ? "pl-4 font-medium" : "pl-7",
+              "block py-1 text-[rgb(var(--text-3))] hover:text-[rgb(var(--text-1))] transition-colors",
+              "border-l border-transparent hover:border-[rgb(var(--text-2))] -ml-px",
+              h.depth === 2 ? "pl-3.5" : "pl-7 text-[12px]",
             ]}
           >
             {h.text}

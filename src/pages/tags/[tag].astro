@@ -7,15 +7,12 @@ import { slugify } from '../../lib/utils';
 export async function getStaticPaths() {
   const allPosts = (await getCollection('posts')).filter((p) => !p.data.draft);
   const tagSet = new Set<string>();
-  allPosts.forEach((post) => post.data.tags.forEach((tag) => tagSet.add(tag)));
-
+  allPosts.forEach((p) => p.data.tags.forEach((t) => tagSet.add(t)));
   return [...tagSet].map((tag) => ({
     params: { tag: slugify(tag) },
     props: {
       tag,
-      posts: allPosts
-        .filter((post) => post.data.tags.includes(tag))
-        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+      posts: allPosts.filter((p) => p.data.tags.includes(tag)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
     },
   }));
 }
@@ -23,25 +20,18 @@ export async function getStaticPaths() {
 const { tag, posts } = Astro.props;
 ---
 
-<BaseLayout title={`#${tag}`} description={`标签 "${tag}" 下的所有文章`}>
-  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
-    <header class="mb-10 animate-fade-in">
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+<BaseLayout title={`#${tag}`}>
+  <div class="max-w-[1080px] mx-auto px-6 py-12 sm:py-16">
+    <header class="mb-6 pb-6 border-b border-[rgb(var(--border))]">
+      <h1 class="text-[24px] sm:text-[28px] font-extrabold tracking-[-0.02em]">
         <span class="text-[rgb(var(--accent))]">#</span>{tag}
       </h1>
-      <p class="mt-2 text-[rgb(var(--text-secondary))]">{posts.length} <span data-i18n="tags.articles">篇文章</span></p>
+      <p class="mt-1 text-[14px] text-[rgb(var(--text-3))]">{posts.length} <span data-i18n="tags.articles">篇文章</span></p>
     </header>
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div>
       {posts.map((post: any) => (
-        <ArticleCard
-          title={post.data.title}
-          description={post.data.description}
-          category={post.data.category}
-          tags={post.data.tags}
-          date={post.data.date}
-          slug={post.id}
-          body={post.body || ''}
-        />
+        <ArticleCard title={post.data.title} description={post.data.description} category={post.data.category}
+          tags={post.data.tags} date={post.data.date} slug={post.id} body={post.body || ''} />
       ))}
     </div>
   </div>

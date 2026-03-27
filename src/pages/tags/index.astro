@@ -5,27 +5,20 @@ import { slugify, withBase } from '../../lib/utils';
 
 const allPosts = (await getCollection('posts')).filter((p) => !p.data.draft);
 const tagCounts = new Map<string, number>();
-allPosts.forEach((post) => {
-  post.data.tags.forEach((tag) => {
-    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-  });
-});
-const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+allPosts.forEach((p) => p.data.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1)));
+const sorted = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => withBase(path, base);
 ---
 
-<BaseLayout title="标签" description="按标签浏览所有文章">
-  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-12 sm:py-16">
-    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-8 animate-fade-in" data-i18n="tags.title">标签</h1>
-    <div class="flex flex-wrap gap-3 animate-fade-in" style="animation-delay: 0.1s">
-      {sortedTags.map(([tag, count]) => (
-        <a
-          href={url(`tags/${slugify(tag)}/`)}
-          class="px-4 py-2.5 rounded-xl border border-[rgb(var(--border))] text-sm font-medium hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent))] hover:bg-[rgb(var(--accent))]/5 transition-all"
-        >
-          #{tag}
-          <span class="ml-1.5 text-[rgb(var(--text-tertiary))]">({count})</span>
+<BaseLayout title="标签">
+  <div class="max-w-[1080px] mx-auto px-6 py-12 sm:py-16">
+    <h1 class="text-[24px] sm:text-[28px] font-extrabold tracking-[-0.02em] mb-6" data-i18n="tags.title">标签</h1>
+    <div class="flex flex-wrap gap-2">
+      {sorted.map(([tag, count]) => (
+        <a href={url(`tags/${slugify(tag)}/`)}
+          class="px-3 py-1.5 text-[13px] font-medium rounded-full border border-[rgb(var(--border))] text-[rgb(var(--text-2))] hover:text-[rgb(var(--text-1))] hover:border-[rgb(var(--text-3))] transition-colors">
+          {tag} <span class="text-[rgb(var(--text-3))]">{count}</span>
         </a>
       ))}
     </div>
