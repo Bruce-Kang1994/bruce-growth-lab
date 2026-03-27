@@ -1,5 +1,5 @@
 ---
-import { formatDate, readingTime, withBase } from '../lib/utils';
+import { categoryColors, formatDate, readingTime, withBase } from '../lib/utils';
 import { translations } from '../lib/i18n';
 
 interface Props {
@@ -18,11 +18,15 @@ const url = (path: string) => withBase(path, base);
 const catLabel = translations.zh.category[category as keyof typeof translations.zh.category]?.label || category;
 const mins = readingTime(body);
 const primaryTag = tags[0];
+const tone = categoryColors[category] ?? categoryColors.frameworks;
 ---
 
 <a href={url(`posts/${slug}/`)} class="post-link group block py-6">
   <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2 text-[13px] text-[rgb(var(--text-3))]">
-    <span class="font-semibold text-[rgb(var(--text-2))]" data-i18n={`category.${category}.label`}>{catLabel}</span>
+    <span class:list={['inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold', tone.bg, tone.text, tone.border]} data-i18n={`category.${category}.label`}>
+      <span class="inline-block h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
+      {catLabel}
+    </span>
     <span>&middot;</span>
     <span>{formatDate(date)}</span>
     <span>&middot;</span>

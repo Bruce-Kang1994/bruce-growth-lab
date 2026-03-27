@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
-import { withBase } from '../lib/utils';
+import { categoryColors, withBase } from '../lib/utils';
 import { translations } from '../lib/i18n';
 
 const allPosts = (await getCollection('posts'))
@@ -16,10 +16,12 @@ const highlightedPosts = allPosts.filter((p) => p.id !== leadPost?.id).slice(0, 
 const base = import.meta.env.BASE_URL;
 const url = (path: string) => withBase(path, base);
 const cats = translations.zh.category;
+const totalTags = new Set(allPosts.flatMap((post) => post.data.tags)).size;
 const categoryEntries = Object.entries(cats).map(([key, val]) => ({
   key,
   ...val,
   count: allPosts.filter((post) => post.data.category === key).length,
+  tone: categoryColors[key] ?? categoryColors.frameworks,
 }));
 const readingPaths = [
   {
@@ -45,28 +47,72 @@ const readingPaths = [
     <section class="pt-14 sm:pt-20 pb-14 sm:pb-16">
       <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
         <div>
-          <div class="eyebrow mb-5">Bruce Kang's Working Notebook</div>
-          <h1 class="display-serif text-[44px] sm:text-[64px] leading-[0.96] tracking-[-0.05em] max-w-[12ch]">
+          <div class="eyebrow mb-5">Bruce Kang's Growth Research</div>
+          <h1 class="display-serif text-[46px] sm:text-[68px] leading-[0.94] tracking-[-0.055em] max-w-[12ch]">
             把增长拆成结构，再把结构变成执行。
           </h1>
-          <p class="mt-6 max-w-[42rem] text-[17px] sm:text-[18px] leading-relaxed text-[rgb(var(--text-2))]">
-            这里不追热点，不堆黑话。我更关心产品为什么会增长、增长动作依赖什么业务前提，以及哪些判断真的能被迁移到别的场景里继续成立。
+          <p class="mt-6 max-w-[44rem] text-[17px] sm:text-[19px] leading-relaxed text-[rgb(var(--text-2))]">
+            我把增长当成一套可设计、可迁移的工作系统来写。这里有方法框架、真实拆解，也有正在形成中的研究线索，但不会做成信息流。
           </p>
 
-          <div class="mt-8 flex flex-wrap gap-2.5">
+          <div class="mt-8 flex flex-wrap gap-3">
             <a href={url('frameworks/')} class="tag-pill">从框架开始</a>
             <a href={url('case-studies/')} class="tag-pill">看真实拆解</a>
             <a href={url('about/')} class="tag-pill">了解这个站怎么写</a>
           </div>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <div class="metric-chip">
+              <span class="metric-chip__value">{allPosts.length}</span>
+              <span class="metric-chip__label">篇公开文章</span>
+            </div>
+            <div class="metric-chip">
+              <span class="metric-chip__value">{totalTags}</span>
+              <span class="metric-chip__label">个主题标签</span>
+            </div>
+            <div class="metric-chip">
+              <span class="metric-chip__value">1</span>
+              <span class="metric-chip__label">个长期研究站</span>
+            </div>
+          </div>
         </div>
 
-        <aside class="paper-card p-5 sm:p-6">
-          <div class="section-kicker mb-4">这不是资讯流</div>
-          <ul class="space-y-3 text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
-            <li>只写能复用的判断，不写“知道了也没法用”的空洞总结。</li>
-            <li>优先拆结构、变量、杠杆和执行顺序，而不是只给结论。</li>
-            <li>每篇文章都希望回答一个明确问题，而不是完成一次内容产出。</li>
-          </ul>
+        <aside class="hero-showcase">
+          <div class="hero-showcase__glow"></div>
+          <div class="hero-showcase__panel">
+            <div class="hero-showcase__top">
+              <span class="hero-badge">Growth Research OS</span>
+              <span class="hero-meta">Structured, not stream-based</span>
+            </div>
+            <div class="hero-showcase__feature">
+              <div class="section-kicker mb-3">What This Site Optimizes For</div>
+              <h3 class="text-[24px] leading-[1.1] tracking-[-0.03em] font-semibold max-w-[12ch]">
+                展示感更强，但判断仍然优先于包装。
+              </h3>
+              <p class="mt-3 text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
+                借一点飞书和腾讯式的模块秩序、色彩分层和产品感，但不牺牲阅读与思考。
+              </p>
+            </div>
+
+            <div class="hero-signal-grid">
+              {categoryEntries.map((entry) => (
+                <a href={url(`${entry.key}/`)} class:list={['signal-tile group', entry.tone.bg, entry.tone.border]}>
+                  <div class="flex items-center justify-between gap-3">
+                    <span class:list={['signal-index', entry.tone.text]}>{entry.tone.icon}</span>
+                    <span class="signal-status">{entry.count > 0 ? 'Active' : 'Building'}</span>
+                  </div>
+                  <div class="mt-4">
+                    <div class="text-[15px] font-semibold tracking-[-0.02em] text-[rgb(var(--text-1))] group-hover:text-[rgb(var(--accent))] transition-colors">
+                      {entry.label}
+                    </div>
+                    <div class="mt-1 text-[12px] leading-relaxed text-[rgb(var(--text-3))]">
+                      {entry.count} 篇内容
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
         </aside>
       </div>
     </section>
@@ -86,8 +132,11 @@ const readingPaths = [
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {categoryEntries.map((entry) => (
-          <a href={url(`${entry.key}/`)} class="paper-card p-5 group">
-            <div class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))] mb-6">{entry.count} 篇内容</div>
+          <a href={url(`${entry.key}/`)} class="track-card p-5 group">
+            <div class="flex items-center justify-between gap-4 mb-6">
+              <span class:list={['track-card__icon', entry.tone.bg, entry.tone.text, entry.tone.border]}>{entry.tone.icon}</span>
+              <span class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))]">{entry.count} 篇内容</span>
+            </div>
             <h3 class="text-[18px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">
               {entry.label}
             </h3>
@@ -103,10 +152,12 @@ const readingPaths = [
 
         <section class="py-10">
           <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
-            <article class="paper-card p-6 sm:p-8">
+            <article class="paper-card paper-card--accent p-6 sm:p-8">
               <div class="section-kicker mb-5">Lead Essay</div>
               <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-[rgb(var(--text-3))] mb-4">
-                <span class="font-semibold text-[rgb(var(--text-2))]">{cats[leadPost.data.category as keyof typeof cats]?.label}</span>
+                <span class:list={['inline-flex items-center rounded-full border px-2.5 py-1 text-[12px] font-semibold', categoryColors[leadPost.data.category]?.bg, categoryColors[leadPost.data.category]?.text, categoryColors[leadPost.data.category]?.border]}>
+                  {cats[leadPost.data.category as keyof typeof cats]?.label}
+                </span>
                 <span>&middot;</span>
                 <span>{leadPost.data.date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               </div>
@@ -130,7 +181,7 @@ const readingPaths = [
             </article>
 
             <aside class="flex flex-col gap-4">
-              <div class="muted-panel p-5">
+              <div class="muted-panel muted-panel--brand p-5">
                 <div class="section-kicker mb-3">How To Read</div>
                 <p class="text-[14px] leading-relaxed text-[rgb(var(--text-2))]">
                   如果你是第一次来，先看这篇总框架，再回到案例拆解，会更容易看出每个增长动作背后的结构。
@@ -170,7 +221,7 @@ const readingPaths = [
 
       <div class="grid gap-4 md:grid-cols-3">
         {readingPaths.map((item) => (
-          <a href={item.href} class="paper-card p-5 group">
+          <a href={item.href} class="path-card p-5 group">
             <div class="text-[11px] uppercase tracking-[0.12em] text-[rgb(var(--text-3))] mb-4">Start Here</div>
             <h3 class="text-[19px] font-semibold tracking-[-0.02em] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">
               {item.title}
