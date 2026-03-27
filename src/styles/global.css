@@ -77,8 +77,8 @@ a {
     linear-gradient(rgb(var(--border) / 0.16) 1px, transparent 1px),
     linear-gradient(90deg, rgb(var(--border) / 0.1) 1px, transparent 1px);
   background-size: 100% 34px, 34px 100%;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), transparent 18rem);
-  opacity: 0.28;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.12), transparent 10rem);
+  opacity: 0.18;
 }
 
 .eyebrow {
