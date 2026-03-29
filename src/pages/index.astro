@@ -91,15 +91,13 @@ const leadReadMinutes = leadPost ? readingTime(leadPost.body || '') : 0;
 
         <aside class="paper-card p-5 sm:p-6 self-start">
           <div class="section-kicker mb-4" data-copy-zh="建议阅读顺序" data-copy-en="Recommended Reading Order">建议阅读顺序</div>
-          <div class="space-y-3">
+          <div class="reading-order-list">
             {readingPaths.map((path, i) => (
-              <a href={path.href} class="group block">
-                <div class="flex items-start gap-3">
-                  <span class="shrink-0 w-6 h-6 rounded-full bg-[rgb(var(--accent))]/10 text-[rgb(var(--accent))] text-[12px] font-bold flex items-center justify-center">{i + 1}</span>
-                  <div class="min-w-0">
-                    <div class="text-[14px] font-semibold group-hover:text-[rgb(var(--accent))] transition-colors" data-copy-zh={path.titleZh} data-copy-en={path.titleEn}>{path.titleZh}</div>
-                    <div class="text-[12px] leading-relaxed text-[rgb(var(--text-3))] mt-0.5" data-copy-zh={path.descZh} data-copy-en={path.descEn}>{path.descZh}</div>
-                  </div>
+              <a href={path.href} class:list={['reading-order-item group', i === 0 && 'is-primary']}>
+                <span class="reading-order-item__index">{i + 1}</span>
+                <div class="reading-order-item__body">
+                  <div class="reading-order-item__title" data-copy-zh={path.titleZh} data-copy-en={path.titleEn}>{path.titleZh}</div>
+                  <div class="reading-order-item__desc" data-copy-zh={path.descZh} data-copy-en={path.descEn}>{path.descZh}</div>
                 </div>
               </a>
             ))}
@@ -174,7 +172,9 @@ const leadReadMinutes = leadPost ? readingTime(leadPost.body || '') : 0;
                 </div>
                 <div class="lead-essay__meta-tile">
                   <div class="lead-essay__meta-label" data-copy-zh="包含标签" data-copy-en="Tagged with">包含标签</div>
-                  <div class="lead-essay__meta-value">{leadPost.data.tags.length}</div>
+                  <div class="lead-essay__meta-value" data-locale-tag-count data-count={leadPost.data.tags.length}>
+                    {leadPost.data.tags.length} 个标签
+                  </div>
                 </div>
               </div>
 
