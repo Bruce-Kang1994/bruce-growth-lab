@@ -4,7 +4,7 @@ description: "来自 Reforge、Superhuman、Craft Ventures、Cognition 四位增
 category: "dialogues"
 tags: ["AI产品", "增长法则", "留存", "信任", "PLG"]
 date: 2026-03-29
-featured: true
+featured: false
 draft: false
 ---
 
